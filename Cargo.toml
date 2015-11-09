@@ -1,0 +1,9 @@
+[package]
+name = "standups_weekly"
+version = "0.1.0"
+authors = ["Kan-Ru Chen <kanru@kanru.info>"]
+
+[dependencies]
+hyper = "0.6"
+rustc-serialize = "0.3"
+regex = "0.1"
