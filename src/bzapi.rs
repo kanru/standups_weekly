@@ -35,11 +35,17 @@ impl fmt::Display for BugData {
 pub fn get_bug_data(number: &str) -> BugData {
     let api_endpoint = format!("https://bugzilla.mozilla.org/rest/bug/{}?include_fields=summary,status,resolution", number);
     let client = Client::new();
-    let mut res = client.get(&api_endpoint)
+    let maybe_res = client.get(&api_endpoint)
         .header(Connection::close())
-        .send().unwrap();
-    let mut body = String::new();
-    res.read_to_string(&mut body).unwrap();
-    let mut response: Response = json::decode(&body).unwrap();
-    response.bugs.pop().unwrap_or(BugData::new())
+        .send();
+    let mut ret = BugData::new();
+    if let Ok(mut res) = maybe_res {
+        let mut body = String::new();
+        if let Ok(_) = res.read_to_string(&mut body) {
+            if let Ok(mut response) = json::decode::<Response>(&body) {
+                ret = response.bugs.pop().unwrap_or(ret);
+            }
+        }
+    }
+    ret
 }
