@@ -24,14 +24,21 @@ fn textify(maybe_html: &str) -> String {
     bug_re.replace_all(&text, "bug $number")
 }
 
-fn extract_bug_details(input: &str) -> Vec<String> {
+fn extract_bug_numbers(input: &str) -> Vec<String> {
     let bug_re =
         Regex::new("[Bb]ug\\s+(?P<number>\\d+)").unwrap();
     bug_re.captures_iter(input).map(|caps| {
-        let number = caps.name("number").unwrap();
-        let data = bzapi::get_bug_data(&number);
-        format!("https://bugzil.la/{} {}", number, data)
+        caps.name("number").unwrap().to_string()
     }).collect()
+}
+
+fn extract_bug_details(bugs: &Vec<String>) -> Vec<String> {
+    let mut result = Vec::new();
+    for bug_number in bugs {
+        let data = bzapi::get_bug_data(&bug_number);
+        result.push(format!("https://bugzil.la/{} {}", bug_number, data));
+    }
+    result
 }
 
 fn main() {
@@ -52,13 +59,16 @@ fn main() {
         let mut bugs = Vec::new();
         for content in status {
             println!("  * {}", content);
-            bugs.extend(extract_bug_details(&content));
+            bugs.extend(extract_bug_numbers(&content));
         }
         if !bugs.is_empty() {
             println!("");
-        }
-        for bug in bugs {
-            println!("  * {}", bug);
+            bugs.sort();
+            bugs.dedup();
+            let bugs_detail = extract_bug_details(&bugs);
+            for bug in bugs_detail {
+                println!("  * {}", bug);
+            }
         }
     }
 }
