@@ -9,27 +9,32 @@ mod api2;
 mod bzapi;
 
 fn titlecase(input: &str) -> String {
-    input.chars().enumerate()
-        .map(|(i, c)| if i == 0 { c.to_uppercase().next().unwrap() } else { c })
-        .collect()
+    input.chars()
+         .enumerate()
+         .map(|(i, c)| {
+             if i == 0 {
+                 c.to_uppercase().next().unwrap()
+             } else {
+                 c
+             }
+         })
+         .collect()
 }
 
 fn textify(maybe_html: &str) -> String {
-    let bug_re =
-        Regex::new("<a href=\"http://bugzilla[^\"]+\">[Bb]ug\\s+(?P<number>\\d+)</a>").unwrap();
+    let bug_re = Regex::new("<a href=\"http://bugzilla[^\"]+\">[Bb]ug\\s+(?P<number>\\d+)</a>")
+                     .unwrap();
     let text = bug_re.replace_all(maybe_html, "$number");
 
-    let bug_re =
-        Regex::new("(?P<number>\\d{5,})").unwrap();
+    let bug_re = Regex::new("(?P<number>\\d{5,})").unwrap();
     bug_re.replace_all(&text, "bug $number")
 }
 
 fn extract_bug_numbers(input: &str) -> Vec<String> {
-    let bug_re =
-        Regex::new("[Bb]ug\\s+(?P<number>\\d+)").unwrap();
-    bug_re.captures_iter(input).map(|caps| {
-        caps.name("number").unwrap().to_string()
-    }).collect()
+    let bug_re = Regex::new("[Bb]ug\\s+(?P<number>\\d+)").unwrap();
+    bug_re.captures_iter(input)
+          .map(|caps| caps.name("number").unwrap().to_string())
+          .collect()
 }
 
 fn extract_bug_details(bugs: &Vec<String>) -> Vec<String> {
