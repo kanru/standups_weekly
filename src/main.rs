@@ -1,6 +1,7 @@
+extern crate chrono;
 extern crate hyper;
-extern crate rustc_serialize;
 extern crate regex;
+extern crate rustc_serialize;
 
 use regex::Regex;
 use std::collections::HashMap;

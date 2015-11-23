@@ -1,3 +1,4 @@
+use chrono::Local;
 use hyper::Client;
 use hyper::header::Connection;
 use rustc_serialize::json;
@@ -24,9 +25,10 @@ pub struct Status {
 }
 
 pub fn get_project_timeline(slug: &str) -> Vec<Status> {
+    let day = Local::today().format("%Y-%m-%d");
     let api_endpoint = format!("http://www.standu.ps/api/v2/statuses/project_timeline.\
-                                json?slug={}&weekly=1",
-                               slug);
+                                json?slug={}&week={}",
+                               slug, day);
     let client = Client::new();
     let mut res = client.get(&api_endpoint)
                         .header(Connection::close())

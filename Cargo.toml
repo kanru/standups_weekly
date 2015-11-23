@@ -7,3 +7,4 @@ authors = ["Kan-Ru Chen <kanru@kanru.info>"]
 hyper = "0.6"
 rustc-serialize = "0.3"
 regex = "0.1"
+chrono = "0.2"
