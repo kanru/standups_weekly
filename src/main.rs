@@ -15,8 +15,8 @@ const USAGE: &'static str = "
 Standups Weekly Report.
 
 Usage:
+  standups_weekly [-d <date>]
   standups_weekly -h
-  standups_weekly -d <date>
 
 Options:
   -h --help                 Show this screen.
