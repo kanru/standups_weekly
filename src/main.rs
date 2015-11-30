@@ -1,13 +1,27 @@
 extern crate chrono;
+extern crate docopt;
 extern crate hyper;
 extern crate regex;
 extern crate rustc_serialize;
 
+use docopt::Docopt;
 use regex::Regex;
 use std::collections::HashMap;
 
 mod api2;
 mod bzapi;
+
+const USAGE: &'static str = "
+Standups Weekly Report.
+
+Usage:
+  standups_weekly -h
+  standups_weekly -d <date>
+
+Options:
+  -h --help                 Show this screen.
+  -d <date>, --date <date>  The date in yyyy-mm-dd format.
+";
 
 fn titlecase(input: &str) -> String {
     input.chars()
@@ -48,7 +62,12 @@ fn extract_bug_details(bugs: &Vec<String>) -> Vec<String> {
 }
 
 fn main() {
-    let decoded = api2::get_project_timeline("perf-tw");
+    let args = Docopt::new(USAGE)
+                      .and_then(|dopt| dopt.parse())
+                      .unwrap_or_else(|e| e.exit());
+
+    let date = args.get_str("--date");
+    let decoded = api2::get_project_timeline("perf-tw", &date);
 
     let mut reports = HashMap::new();
 

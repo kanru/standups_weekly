@@ -3,6 +3,7 @@ use hyper::Client;
 use hyper::header::Connection;
 use rustc_serialize::json;
 use std::io::Read;
+use std::fmt::Display;
 
 #[derive(RustcDecodable, Debug)]
 pub struct User {
@@ -24,8 +25,12 @@ pub struct Status {
     pub content: String,
 }
 
-pub fn get_project_timeline(slug: &str) -> Vec<Status> {
-    let day = Local::today().format("%Y-%m-%d");
+pub fn get_project_timeline(slug: &str, day: &str) -> Vec<Status> {
+    let day: Box<Display> = if day.is_empty() {
+        Box::new(Local::today().format("%Y-%m-%d"))
+    } else {
+        Box::new(day)
+    };
     let api_endpoint = format!("http://www.standu.ps/api/v2/statuses/project_timeline.\
                                 json?slug={}&week={}",
                                slug, day);
