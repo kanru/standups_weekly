@@ -11,6 +11,7 @@ use std::collections::HashMap;
 mod api2;
 mod bzapi;
 
+#[rustfmt_skip]
 const USAGE: &'static str = "
 Standups Weekly Report.
 
@@ -63,8 +64,8 @@ fn extract_bug_details(bugs: &Vec<String>) -> Vec<String> {
 
 fn main() {
     let args = Docopt::new(USAGE)
-                      .and_then(|dopt| dopt.parse())
-                      .unwrap_or_else(|e| e.exit());
+                   .and_then(|dopt| dopt.parse())
+                   .unwrap_or_else(|e| e.exit());
 
     let date = args.get_str("--date");
     let decoded = api2::get_project_timeline("perf-tw", &date);

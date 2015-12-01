@@ -33,7 +33,8 @@ pub fn get_project_timeline(slug: &str, day: &str) -> Vec<Status> {
     };
     let api_endpoint = format!("http://www.standu.ps/api/v2/statuses/project_timeline.\
                                 json?slug={}&week={}&count=800",
-                               slug, day);
+                               slug,
+                               day);
     let client = Client::new();
     let mut res = client.get(&api_endpoint)
                         .header(Connection::close())
