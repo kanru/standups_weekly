@@ -11,7 +11,7 @@ use std::collections::HashMap;
 mod api2;
 mod bzapi;
 
-#[rustfmt_skip]
+#[cfg_attr(rustfmt, rustfmt_skip)]
 const USAGE: &'static str = "
 Standups Weekly Report.
 
