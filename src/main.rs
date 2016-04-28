@@ -104,12 +104,20 @@ fn main() {
         print_section(username, wiki);
         if wiki {
             let mut bugs_map = HashMap::new();
+            let mut no_bugs_reports = Vec::new();
             for content in status {
                 let bugs = extract_bug_numbers(&content);
-                for bug in bugs {
-                    let vec = bugs_map.entry(bug).or_insert(Vec::new());
-                    vec.push(content.clone());
+                if bugs.is_empty() {
+                    no_bugs_reports.push(content.clone());
+                } else {
+                    for bug in bugs {
+                        let vec = bugs_map.entry(bug).or_insert(Vec::new());
+                        vec.push(content.clone());
+                    }
                 }
+            }
+            for report in no_bugs_reports {
+                println!("* {}", report);
             }
             for (bug, vec) in bugs_map.iter() {
                 let bug_detail = bzapi::get_bug_data(&bug);
