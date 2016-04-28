@@ -17,11 +17,14 @@ Standups Weekly Report.
 
 Usage:
   standups_weekly [-d <date>]
+  standups_weekly -s <start_date> -e <end_date>
   standups_weekly -h
 
 Options:
-  -h --help                 Show this screen.
-  -d <date>, --date <date>  The date in yyyy-mm-dd format.
+  -h --help                  Show this screen.
+  -d <date>, --date <date>   The date in yyyy-mm-dd format.
+  -s <date>, --start <date>  The date in yyyy-mm-dd format.
+  -e <date>, --end <date>    The date in yyyy-mm-dd format.
 ";
 
 fn titlecase(input: &str) -> String {
@@ -68,7 +71,14 @@ fn main() {
                    .unwrap_or_else(|e| e.exit());
 
     let date = args.get_str("--date");
-    let decoded = api2::get_project_timeline("perf-tw", &date);
+    let week_start = args.get_str("--start");
+    let week_end = args.get_str("--end");
+    let decoded;
+    if !date.is_empty() {
+        decoded = api2::get_project_timeline("perf-tw", &date);
+    } else {
+        decoded = api2::get_project_timeline_range("perf-tw", &week_start, &week_end);
+    }
 
     let mut reports = HashMap::new();
 
