@@ -121,7 +121,7 @@ fn main() {
             }
             for (bug, vec) in bugs_map.iter() {
                 let bug_detail = bzapi::get_bug_data(&bug);
-                println!("* {{{{{}}}}} {}", bug, bug_detail);
+                println!("* {{{{bug|{}}}}} {}", bug, bug_detail);
                 for content in vec {
                     println!("** {}", content);
                 }
