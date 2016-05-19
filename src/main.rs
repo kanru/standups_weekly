@@ -93,7 +93,7 @@ fn main() {
     let mut reports = HashMap::new();
 
     for status in &decoded {
-        let vec = reports.entry(&status.user.name).or_insert(Vec::new());
+        let vec = reports.entry(&status.user.username).or_insert(Vec::new());
         vec.push(titlecase(&textify(&status.content)));
     }
 
