@@ -50,20 +50,11 @@ fn textify(maybe_html: &str) -> String {
     bug_re.replace_all(&text, "bug $number")
 }
 
-fn extract_bug_numbers(input: &str) -> Vec<String> {
+fn extract_bug_numbers(input: &str) -> Vec<u32> {
     let bug_re = Regex::new("[Bb]ug\\s+(?P<number>\\d+)").unwrap();
     bug_re.captures_iter(input)
-          .map(|caps| caps.name("number").unwrap().to_string())
+          .map(|caps| caps.name("number").unwrap().parse().unwrap())
           .collect()
-}
-
-fn extract_bug_details(bugs: &Vec<String>) -> Vec<String> {
-    let mut result = Vec::new();
-    for bug_number in bugs {
-        let data = bzapi::get_bug_data(&bug_number);
-        result.push(format!("https://bugzil.la/{} {}", bug_number, data));
-    }
-    result
 }
 
 fn print_section(section: &str, wiki: bool) {
@@ -91,11 +82,14 @@ fn main() {
     }
 
     let mut reports = HashMap::new();
+    let mut bug_numbers = Vec::new();
 
     for status in &decoded {
         let vec = reports.entry(&status.user.username).or_insert(Vec::new());
         vec.push(titlecase(&textify(&status.content)));
+        bug_numbers.extend(extract_bug_numbers(&status.content));
     }
+    let bug_details = bzapi::get_bugs(&bug_numbers);
 
     for (username, status) in reports.iter_mut() {
         status.sort();
@@ -120,8 +114,8 @@ fn main() {
                 println!("* {}", report);
             }
             for (bug, vec) in bugs_map.iter() {
-                let bug_detail = bzapi::get_bug_data(&bug);
-                println!("* {{{{bug|{}}}}} {}", bug, bug_detail);
+                let bug_data = bug_details.get(bug).unwrap();
+                println!("* {{{{bug|{}}}}} {}", bug, bug_data);
                 for content in vec {
                     println!("** {}", content);
                 }
@@ -136,9 +130,9 @@ fn main() {
                 println!("");
                 bugs.sort();
                 bugs.dedup();
-                let bugs_detail = extract_bug_details(&bugs);
-                for bug in bugs_detail {
-                    println!("  * {}", bug);
+                for bug in &bugs {
+                    let data = bug_details.get(bug).unwrap();
+                    println!("  * https://bugzil.la/{} {}", data.id, data);
                 }
             }
         }
