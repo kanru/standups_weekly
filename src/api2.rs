@@ -37,9 +37,9 @@ pub fn get_project_timeline(slug: &str, day: &str) -> Vec<Status> {
                                day);
     let client = Client::new();
     let mut res = client.get(&api_endpoint)
-                        .header(Connection::close())
-                        .send()
-                        .unwrap();
+        .header(Connection::close())
+        .send()
+        .unwrap();
     let mut body = String::new();
     res.read_to_string(&mut body).unwrap();
     json::decode(&body).unwrap()
@@ -49,12 +49,13 @@ pub fn get_project_timeline_range(slug: &str, start: &str, end: &str) -> Vec<Sta
     let api_endpoint = format!("http://www.standu.ps/api/v2/statuses/project_timeline.\
                                 json?slug={}&week_start={}&week_end={}",
                                slug,
-                               start, end);
+                               start,
+                               end);
     let client = Client::new();
     let mut res = client.get(&api_endpoint)
-                        .header(Connection::close())
-                        .send()
-                        .unwrap();
+        .header(Connection::close())
+        .send()
+        .unwrap();
     let mut body = String::new();
     res.read_to_string(&mut body).unwrap();
     json::decode(&body).unwrap()

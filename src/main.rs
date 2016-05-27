@@ -30,20 +30,20 @@ Options:
 
 fn titlecase(input: &str) -> String {
     input.chars()
-         .enumerate()
-         .map(|(i, c)| {
-             if i == 0 {
-                 c.to_uppercase().next().unwrap()
-             } else {
-                 c
-             }
-         })
-         .collect()
+        .enumerate()
+        .map(|(i, c)| {
+            if i == 0 {
+                c.to_uppercase().next().unwrap()
+            } else {
+                c
+            }
+        })
+        .collect()
 }
 
 fn textify(maybe_html: &str) -> String {
     let bug_re = Regex::new("<a href=\"http://bugzilla[^\"]+\">[Bb]ug\\s+(?P<number>\\d+)</a>")
-                     .unwrap();
+        .unwrap();
     let text = bug_re.replace_all(maybe_html, "$number");
 
     let bug_re = Regex::new("(?P<number>\\d{5,})").unwrap();
@@ -53,8 +53,8 @@ fn textify(maybe_html: &str) -> String {
 fn extract_bug_numbers(input: &str) -> Vec<u32> {
     let bug_re = Regex::new("[Bb]ug\\s+(?P<number>\\d+)").unwrap();
     bug_re.captures_iter(input)
-          .map(|caps| caps.name("number").unwrap().parse().unwrap())
-          .collect()
+        .map(|caps| caps.name("number").unwrap().parse().unwrap())
+        .collect()
 }
 
 fn print_section(section: &str, wiki: bool) {
@@ -67,8 +67,8 @@ fn print_section(section: &str, wiki: bool) {
 
 fn main() {
     let args = Docopt::new(USAGE)
-                   .and_then(|dopt| dopt.parse())
-                   .unwrap_or_else(|e| e.exit());
+        .and_then(|dopt| dopt.parse())
+        .unwrap_or_else(|e| e.exit());
 
     let date = args.get_str("--date");
     let week_start = args.get_str("--start");

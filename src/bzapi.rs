@@ -34,8 +34,8 @@ pub fn get_bugs(bugs: &[u32]) -> HashMap<u32, BugData> {
 
     let client = Client::new();
     let maybe_res = client.get(&api_endpoint)
-                          .header(Connection::close())
-                          .send();
+        .header(Connection::close())
+        .send();
     let mut ret = HashMap::new();
     if let Ok(mut res) = maybe_res {
         let mut body = String::new();
