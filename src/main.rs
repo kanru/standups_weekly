@@ -76,22 +76,22 @@ fn main() {
     let wiki = args.get_bool("--wiki");
     let decoded;
     if !date.is_empty() {
-        decoded = api2::get_project_timeline("perf-tw", &date);
+        decoded = api2::get_project_timeline("perf-tw", date);
     } else {
-        decoded = api2::get_project_timeline_range("perf-tw", &week_start, &week_end);
+        decoded = api2::get_project_timeline_range("perf-tw", week_start, week_end);
     }
 
     let mut reports = HashMap::new();
     let mut bug_numbers = Vec::new();
 
     for status in &decoded {
-        let vec = reports.entry(&status.user.username).or_insert(Vec::new());
+        let vec = reports.entry(&status.user.username).or_insert_with(Vec::new);
         vec.push(titlecase(&textify(&status.content)));
         bug_numbers.extend(extract_bug_numbers(&status.content));
     }
     let bug_details = bzapi::get_bugs(&bug_numbers);
 
-    for (username, status) in reports.iter_mut() {
+    for (username, status) in &mut reports {
         status.sort();
         status.dedup();
 
@@ -100,12 +100,12 @@ fn main() {
             let mut bugs_map = HashMap::new();
             let mut no_bugs_reports = Vec::new();
             for content in status {
-                let bugs = extract_bug_numbers(&content);
+                let bugs = extract_bug_numbers(content);
                 if bugs.is_empty() {
                     no_bugs_reports.push(content.clone());
                 } else {
                     for bug in bugs {
-                        let vec = bugs_map.entry(bug).or_insert(Vec::new());
+                        let vec = bugs_map.entry(bug).or_insert_with(Vec::new);
                         vec.push(content.clone());
                     }
                 }
@@ -113,7 +113,7 @@ fn main() {
             for report in no_bugs_reports {
                 println!("* {}", report);
             }
-            for (bug, vec) in bugs_map.iter() {
+            for (bug, vec) in &bugs_map {
                 let bug_data = bug_details.get(bug).unwrap();
                 println!("* {{{{bug|{}}}}} {}", bug, bug_data);
                 for content in vec {
@@ -124,7 +124,7 @@ fn main() {
             let mut bugs = Vec::new();
             for content in status {
                 println!("  * {}", content);
-                bugs.extend(extract_bug_numbers(&content));
+                bugs.extend(extract_bug_numbers(content));
             }
             if !bugs.is_empty() {
                 println!("");
