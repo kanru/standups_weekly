@@ -114,8 +114,12 @@ fn main() {
                 println!("* {}", report);
             }
             for (bug, vec) in &bugs_map {
-                let bug_data = bug_details.get(bug).unwrap();
-                println!("* {{{{bug|{}}}}} {}", bug, bug_data);
+                match bug_details.get(bug) {
+                    Some(bug_data) =>
+                        println!("* {{{{bug|{}}}}} {}", bug, bug_data),
+                    None =>
+                        println!("* {{{{bug|{}}}}} {}", bug, "Invalid bug or security bug"),
+                };
                 for content in vec {
                     println!("** {}", content);
                 }
