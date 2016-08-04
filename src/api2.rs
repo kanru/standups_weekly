@@ -3,7 +3,6 @@ use hyper::Client;
 use hyper::header::Connection;
 use rustc_serialize::json;
 use std::io::Read;
-use std::fmt::Display;
 
 #[derive(RustcDecodable, Debug)]
 pub struct User {
@@ -26,31 +25,10 @@ pub struct Status {
 }
 
 pub fn get_project_timeline(slug: &str, day: &str) -> Vec<Status> {
-    let day: Box<Display> = if day.is_empty() {
-        Box::new(Local::today().format("%Y-%m-%d"))
-    } else {
-        Box::new(day)
-    };
+    let today = format!("{}", Local::today().format("%Y-%m-%d"));
     let api_endpoint = format!("http://www.standu.ps/api/v2/statuses/project_timeline.\
                                 json?slug={}&week={}&count=800",
-                               slug,
-                               day);
-    let client = Client::new();
-    let mut res = client.get(&api_endpoint)
-        .header(Connection::close())
-        .send()
-        .unwrap();
-    let mut body = String::new();
-    res.read_to_string(&mut body).unwrap();
-    json::decode(&body).unwrap()
-}
-
-pub fn get_project_timeline_range(slug: &str, start: &str, end: &str) -> Vec<Status> {
-    let api_endpoint = format!("http://www.standu.ps/api/v2/statuses/project_timeline.\
-                                json?slug={}&week_start={}&week_end={}",
-                               slug,
-                               start,
-                               end);
+                               slug, if day.is_empty() { &today } else { day });
     let client = Client::new();
     let mut res = client.get(&api_endpoint)
         .header(Connection::close())
